@@ -118,7 +118,8 @@ namespace MyDBQuery
                         }
                     }
                 }
-            }
+            }//if
+
         }
 
         private void btnConnectType_Click(object sender, EventArgs e)
