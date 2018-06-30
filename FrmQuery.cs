@@ -1,7 +1,6 @@
 ﻿using Common;
 using Oracle.ManagedDataAccess.Client;
 using System;
-using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
@@ -10,12 +9,12 @@ namespace MyDBQuery
 {
     public partial class FrmQuery : Form
     {
-        private string mOracleConnStr = string.Empty;
         private DataTable mLastQuery = null;
+        private TConnectType mConnectType=null;
         public FrmQuery()
         {
             InitializeComponent();
-            mOracleConnStr = ConfigurationManager.ConnectionStrings["OracleConnStr"].ConnectionString;
+            //mOracleConnStr = ConfigurationManager.ConnectionStrings["OracleConnStr"].ConnectionString;
         }
 
         private void btnQuery_Click(object sender, EventArgs e)
@@ -36,26 +35,48 @@ namespace MyDBQuery
         }
         private void DoQuery(string sSql)
         {
-            if (string.IsNullOrEmpty(sSql)) { return; }
-            mLastQuery = new DataTable();
-            try
-            {
-                using (var conn = new OracleConnection(mOracleConnStr))
-                {
-                    using (var dr = OraClientHelper.ExecuteReader(conn, CommandType.Text, sSql, null))
-                    {
-                        mLastQuery.Load(dr);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "连接Oracle失败");
+            if (string.IsNullOrEmpty(sSql) || null== mConnectType) {
                 return;
             }
+            this.Cursor = Cursors.WaitCursor;
+            mLastQuery = new DataTable();
+            if (DbType.SQLServer == mConnectType.Type)
+            {
+                try
+                {
+                    var dt = SqlServerHelper.ExecuteQuery(mConnectType.ConnStr, sSql);
+                    mLastQuery = dt;
+                }
+                catch (Exception ex)
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(ex.Message, "连接SqlServer失败");
+                    return;
+                }
+            }
+            else if (DbType.Oracle == mConnectType.Type)
+            {
+                try
+                {
+                    using (var conn = new OracleConnection(mConnectType.ConnStr))
+                    {
+                        using (var dr = OraClientHelper.ExecuteReader(conn, CommandType.Text, sSql, null))
+                        {
+                            mLastQuery.Load(dr);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(ex.Message, "连接Oracle失败");
+                    return;
+                }
+            }            
             
             gridData.DataSource = mLastQuery;
             setRowNumber(gridData);
+            this.Cursor = Cursors.Default;
         }
 
         private void setRowNumber(DataGridView dgv)
@@ -96,6 +117,20 @@ namespace MyDBQuery
                         }
                     }
                 }
+            }
+        }
+
+        private void btnConnectType_Click(object sender, EventArgs e)
+        {
+            FrmConnectType frmConn = new FrmConnectType();
+            if(DialogResult.OK == frmConn.ShowDialog())
+            {
+                mConnectType = frmConn.ConnectType;
+                btnQuery.Enabled = true;
+                btnExport.Enabled = true;
+
+                var sTitle = string.Format("{0} [{1}]", "Query Test", mConnectType.Type.ToString());
+                this.Text = sTitle;
             }
         }
     }
