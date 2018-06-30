@@ -95,6 +95,7 @@ namespace MyDBQuery
                 ClearGrid();
                 DoQuery(textSql.Text.Trim());
             }
+
             if (null != mLastQuery)
             {
                 var bys = EPPExcelHelper.BuilderExcel(mLastQuery);
