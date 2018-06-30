@@ -131,7 +131,7 @@ namespace MyDBQuery
                 btnQuery.Enabled = true;
                 btnExport.Enabled = true;
 
-                var sTitle = string.Format("{0} [{1}]", "Query Test", mConnectType.Type.ToString());
+                var sTitle = string.Format("{0} [{1}]", "MyDBQuery", mConnectType.Type.ToString());
                 this.Text = sTitle;
             }
         }
