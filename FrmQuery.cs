@@ -1,4 +1,6 @@
 ﻿using Common;
+using MyDBQuery.common;
+using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Data;
@@ -40,44 +42,88 @@ namespace MyDBQuery
             }
             this.Cursor = Cursors.WaitCursor;
             mLastQuery = new DataTable();
-            if (DbType.SQLServer == mConnectType.Type)
+
+            switch (mConnectType.Type)
             {
-                try
-                {
-                    var dt = SqlServerHelper.ExecuteQuery(mConnectType.ConnStr, sSql);
-                    mLastQuery = dt;
-                }
-                catch (Exception ex)
-                {
-                    this.Cursor = Cursors.Default;
-                    MessageBox.Show(ex.Message, "连接SqlServer失败");
-                    return;
-                }
-            }
-            else if (DbType.Oracle == mConnectType.Type)
-            {
-                try
-                {
-                    using (var conn = new OracleConnection(mConnectType.ConnStr))
-                    {
-                        using (var dr = OraClientHelper.ExecuteReader(conn, CommandType.Text, sSql, null))
-                        {
-                            mLastQuery.Load(dr);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.Cursor = Cursors.Default;
-                    MessageBox.Show(ex.Message, "连接Oracle失败");
-                    return;
-                }
-            }            
+                case DbType.SQLServer:
+                    QuerySqlServer(sSql);
+                    break;
+                case DbType.Oracle:
+                    QueryOracle(sSql);
+                    break;
+                case DbType.MySql:
+                    QueryMySql(sSql);
+                    break;
+                default:break;
+            } 
             
             gridData.DataSource = mLastQuery;
             setRowNumber(gridData);
             this.Cursor = Cursors.Default;
         }
+
+        #region 相关查询方法
+        private bool QuerySqlServer(string sSql)
+        {
+            var bRet = false;
+            try
+            {
+                var dt = SqlServerHelper.ExecuteQuery(mConnectType.ConnStr, sSql);
+                mLastQuery = dt;
+                bRet = true;
+            }
+            catch (Exception ex)
+            {
+                this.Cursor = Cursors.Default;
+                MessageBox.Show(ex.Message, "连接SqlServer失败");                
+            }
+            return bRet;
+        }
+
+        private bool QueryOracle(string sSql)
+        {
+            var bRet = false;
+            try
+            {
+                using (var conn = new OracleConnection(mConnectType.ConnStr))
+                {
+                    using (var dr = OraClientHelper.ExecuteReader(conn, CommandType.Text, sSql, null))
+                    {
+                        mLastQuery.Load(dr);
+                    }
+                }
+                bRet = true;
+            }
+            catch (Exception ex)
+            {
+                this.Cursor = Cursors.Default;
+                MessageBox.Show(ex.Message, "连接Oracle失败");
+            }
+            return bRet;
+        }
+
+        private bool QueryMySql(string sSql)
+        {
+            var bRet = false;
+            try
+            {
+                using (var conn = new MySqlConnection(mConnectType.ConnStr))
+                {
+                    using (var dr = MySqlClientHelper.ExecuteReader(conn, CommandType.Text, sSql, null))
+                    {
+                        mLastQuery.Load(dr);
+                    }
+                }
+                bRet = true;
+            }
+            catch (Exception ex)
+            {
+                this.Cursor = Cursors.Default;
+                MessageBox.Show(ex.Message, "连接Mysql失败");
+            }
+            return bRet;
+        }
+        #endregion
 
         private void setRowNumber(DataGridView dgv)
         {

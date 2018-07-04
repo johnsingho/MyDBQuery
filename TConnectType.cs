@@ -10,7 +10,9 @@ namespace MyDBQuery
         [Description("SQLServer")]
         SQLServer = 0,
         [Description("Oracle")]
-        Oracle = 1
+        Oracle = 1,
+        [Description("MySql")]
+        MySql = 2
     };
 
     public class TConnectType

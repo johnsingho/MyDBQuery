@@ -44,14 +44,18 @@ namespace MyDBQuery
             {
             }
             bool bExist = false;
-            foreach(var log in logs)
+            if (null!=logs)
             {
-                if(Md5Helper.VerifyMd5(sConn, log.Key))
+                foreach (var log in logs)
                 {
-                    bExist = true;
-                    break;
+                    if (Md5Helper.VerifyMd5(sConn, log.Key))
+                    {
+                        bExist = true;
+                        break;
+                    }
                 }
             }
+
             if (!bExist)
             {
                 var oIni = new IniParser(IniFile);
