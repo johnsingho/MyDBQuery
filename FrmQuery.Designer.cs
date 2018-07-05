@@ -38,6 +38,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.textSql = new System.Windows.Forms.RichTextBox();
             this.gridData = new System.Windows.Forms.DataGridView();
+            this.btnImport = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -74,15 +75,17 @@
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnCount = 5;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.95751F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.04249F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 87F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 131F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 86F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 79F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 74F));
             this.tableLayoutPanel2.Controls.Add(this.btnConnectType, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnClear, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnExport, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnQuery, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnClear, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnImport, 3, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -94,7 +97,7 @@
             // btnConnectType
             // 
             this.btnConnectType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnConnectType.Location = new System.Drawing.Point(86, 3);
+            this.btnConnectType.Location = new System.Drawing.Point(74, 3);
             this.btnConnectType.Name = "btnConnectType";
             this.btnConnectType.Size = new System.Drawing.Size(104, 26);
             this.btnConnectType.TabIndex = 3;
@@ -117,7 +120,7 @@
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(366, 3);
+            this.btnExport.Location = new System.Drawing.Point(344, 3);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(69, 26);
             this.btnExport.TabIndex = 2;
@@ -129,7 +132,7 @@
             // 
             this.btnQuery.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnQuery.Enabled = false;
-            this.btnQuery.Location = new System.Drawing.Point(279, 3);
+            this.btnQuery.Location = new System.Drawing.Point(258, 3);
             this.btnQuery.Name = "btnQuery";
             this.btnQuery.Size = new System.Drawing.Size(69, 26);
             this.btnQuery.TabIndex = 0;
@@ -176,6 +179,16 @@
             this.gridData.Size = new System.Drawing.Size(570, 196);
             this.gridData.TabIndex = 1;
             // 
+            // btnImport
+            // 
+            this.btnImport.Location = new System.Drawing.Point(419, 3);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(59, 25);
+            this.btnImport.TabIndex = 4;
+            this.btnImport.Text = "Import";
+            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            // 
             // FrmQuery
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -208,6 +221,7 @@
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button btnConnectType;
+        private System.Windows.Forms.Button btnImport;
     }
 }
 

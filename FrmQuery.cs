@@ -16,6 +16,10 @@ namespace MyDBQuery
         public FrmQuery()
         {
             InitializeComponent();
+            btnQuery.Enabled = false;
+            btnExport.Enabled = false;
+            btnImport.Enabled = false;
+
             //mOracleConnStr = ConfigurationManager.ConnectionStrings["OracleConnStr"].ConnectionString;
         }
 
@@ -176,10 +180,65 @@ namespace MyDBQuery
                 mConnectType = frmConn.ConnectType;
                 btnQuery.Enabled = true;
                 btnExport.Enabled = true;
+                btnImport.Enabled = true;
 
                 var sTitle = string.Format("{0} [{1}]", "MyDBQuery", mConnectType.Type.ToString());
                 this.Text = sTitle;
             }
         }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            if (mConnectType == null || mConnectType.Type != DbType.SQLServer)
+            {
+                MessageBox.Show("暂时只实现了SQLServer的");
+                return;
+            }
+
+            FrmImport frmConn = new FrmImport();
+            if (DialogResult.OK != frmConn.ShowDialog())
+            {
+                return;
+            }
+
+            this.Cursor = Cursors.WaitCursor;
+            var sTarTable = frmConn.mTarTable;
+            var sXlsFile = frmConn.mXlsFile;
+            switch (mConnectType.Type)
+            {
+                case DbType.SQLServer:
+                    ImportSQLServer(sTarTable, sXlsFile);
+                    break;
+                default:break;
+            }
+            this.Cursor = Cursors.Default;
+        }
+
+
+        #region 导入
+        private void ImportSQLServer(string sTarTable, string sXlsFile)
+        {
+            try
+            {
+                var dt = EPPExcelHelper.ReadExcel(new FileInfo(sXlsFile));
+                var sErr = string.Empty;
+                var nItems = SqlServerHelper.BulkToDB(mConnectType.ConnStr, dt, sTarTable, out sErr);
+                if (!string.IsNullOrEmpty(sErr))
+                {
+                    MessageBox.Show(sErr);
+                }
+                else
+                {
+                    var str = string.Format("导入完成， {0}条记录", nItems);
+                    MessageBox.Show(str);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Import error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+        }
+        #endregion
     }
 }

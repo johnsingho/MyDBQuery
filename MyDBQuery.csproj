@@ -72,6 +72,12 @@
     <Compile Include="FrmConnectType.Designer.cs">
       <DependentUpon>FrmConnectType.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmImport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmImport.Designer.cs">
+      <DependentUpon>FrmImport.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmQuery.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,6 +89,9 @@
     <Compile Include="TConnectType.cs" />
     <EmbeddedResource Include="FrmConnectType.resx">
       <DependentUpon>FrmConnectType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmImport.resx">
+      <DependentUpon>FrmImport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmQuery.resx">
       <DependentUpon>FrmQuery.cs</DependentUpon>
