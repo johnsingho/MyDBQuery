@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Data;
+using System.Data.SQLite;
 using System.IO;
 using System.Windows.Forms;
 
@@ -31,6 +32,7 @@ namespace MyDBQuery
 
         private void btnClear_Click(object sender, EventArgs e)
         {
+            mLastQuery = null;
             ClearGrid();
             textSql.Clear();
             textSql.Focus();
@@ -57,6 +59,9 @@ namespace MyDBQuery
                     break;
                 case DbType.MySql:
                     QueryMySql(sSql);
+                    break;
+                case DbType.Sqlite:
+                    QuerySqlite(sSql);
                     break;
                 default:break;
             } 
@@ -127,6 +132,29 @@ namespace MyDBQuery
             }
             return bRet;
         }
+
+
+        private bool QuerySqlite(string sSql)
+        {
+            var bRet = false;
+            try
+            {
+                using (var conn = new SQLiteConnection(mConnectType.ConnStr))
+                {
+                    using (var dr = SqliteHelper.ExecuteReader(conn, CommandType.Text, sSql, null))
+                    {
+                        mLastQuery.Load(dr);
+                    }
+                }
+                bRet = true;
+            }
+            catch (Exception ex)
+            {
+                this.Cursor = Cursors.Default;
+                MessageBox.Show(ex.Message, "连接Sqlite失败");
+            }
+            return bRet;
+        }
         #endregion
 
         private void setRowNumber(DataGridView dgv)
@@ -189,38 +217,47 @@ namespace MyDBQuery
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-            if (mConnectType == null || mConnectType.Type != DbType.SQLServer)
+            if (mConnectType == null)
             {
-                MessageBox.Show("暂时只实现了SQLServer的");
                 return;
             }
 
+            var bLastQuery = (null != mLastQuery);
             FrmImport frmConn = new FrmImport();
+            frmConn.SetCheckLastQuery(bLastQuery);
             if (DialogResult.OK != frmConn.ShowDialog())
             {
                 return;
             }
+            if(!bLastQuery)
+            {
+                var sXlsFile = frmConn.mXlsFile;
+                mLastQuery = EPPExcelHelper.ReadExcel(new FileInfo(sXlsFile));
+            }            
 
             this.Cursor = Cursors.WaitCursor;
             var sTarTable = frmConn.mTarTable;
-            var sXlsFile = frmConn.mXlsFile;
+            
             switch (mConnectType.Type)
             {
                 case DbType.SQLServer:
-                    ImportSQLServer(sTarTable, sXlsFile);
+                    ImportSQLServer(sTarTable, mLastQuery);
                     break;
-                default:break;
+                case DbType.Sqlite:
+                    ImportSqlite(sTarTable, mLastQuery);
+                    break;
+                default:
+                    MessageBox.Show("暂时只实现了SQLServer、Sqlite的");
+                    break;
             }
             this.Cursor = Cursors.Default;
         }
 
-
         #region 导入
-        private void ImportSQLServer(string sTarTable, string sXlsFile)
+        private void ImportSQLServer(string sTarTable, DataTable dt)
         {
             try
-            {
-                var dt = EPPExcelHelper.ReadExcel(new FileInfo(sXlsFile));
+            {                
                 var sErr = string.Empty;
                 var nItems = SqlServerHelper.BulkToDB(mConnectType.ConnStr, dt, sTarTable, out sErr);
                 if (!string.IsNullOrEmpty(sErr))
@@ -239,6 +276,30 @@ namespace MyDBQuery
                 return;
             }
         }
+
+        private void ImportSqlite(string sTarTable, DataTable dt)
+        {
+            try
+            {
+                var sErr = string.Empty;
+                var nItems = SqliteHelper.BulkToDB(mConnectType.ConnStr, dt, sTarTable, out sErr);
+                if (!string.IsNullOrEmpty(sErr))
+                {
+                    MessageBox.Show(sErr);
+                }
+                else
+                {
+                    var str = string.Format("导入完成， {0}条记录", nItems);
+                    MessageBox.Show(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Import error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+        }
+
         #endregion
     }
 }

@@ -20,6 +20,13 @@ namespace MyDBQuery
             txtTar.Text = "TB_tmpIDCard";
         }
 
+        public void SetCheckLastQuery(bool bcheck)
+        {
+            chkUseLastQuery.Checked = bcheck;
+            txtXlsFile.Enabled = !bcheck;
+            btnBrowse.Enabled = !bcheck;
+        }
+
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             dlgOpen.Filter = "xlsx Files|*.xlsx|excel2003 Files|*.xls";
@@ -32,13 +39,16 @@ namespace MyDBQuery
 
         private void btnDoImport_Click(object sender, EventArgs e)
         {
-            mTarTable = txtTar.Text.Trim();
-            mXlsFile = txtXlsFile.Text.Trim();
-            if(string.IsNullOrEmpty(mTarTable) || string.IsNullOrEmpty(mXlsFile))
+            if (!chkUseLastQuery.Checked)
             {
-                MessageBox.Show("请提供目标表和excel表格");
-                return;
-            }
+                mTarTable = txtTar.Text.Trim();
+                mXlsFile = txtXlsFile.Text.Trim();
+                if (string.IsNullOrEmpty(mTarTable) || string.IsNullOrEmpty(mXlsFile))
+                {
+                    MessageBox.Show("请提供目标表和excel表格");
+                    return;
+                }
+            }            
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
