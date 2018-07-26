@@ -1,6 +1,8 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
+using System.Linq;
 using System.Data;
+using System.IO;
 
 namespace MyDBQuery.common
 {
@@ -147,5 +149,58 @@ namespace MyDBQuery.common
             }
         }
         #endregion
+
+        public static ulong BulkToDB(string constring, DataTable dt, string tarTble, out string sErr)
+        {
+            sErr = string.Empty;
+            if (DataTableHelper.IsEmptyDataTable(dt)) { return 0; }
+            ulong nIns = 0;
+            string tmpPath = Path.GetTempFileName();
+            string csv = DataTableHelper.DataTableToCsv(dt);
+            try
+            {
+                File.WriteAllText(tmpPath, csv);
+            }
+            catch (Exception ex)
+            {
+                sErr = ex.Message;
+                return 0;
+            }
+
+            using(var conn = new MySqlConnection(constring))
+            {
+                MySqlTransaction tran = null;
+                try
+                {
+                    conn.Open();
+                    tran = conn.BeginTransaction();
+                    MySqlBulkLoader bulk = new MySqlBulkLoader(conn)
+                    {
+                        FieldTerminator = ",",
+                        FieldQuotationCharacter = '"',
+                        EscapeCharacter = '"',
+                        LineTerminator = "\r\n",
+                        FileName = tmpPath,
+                        NumberOfLinesToSkip = 0,
+                        TableName = tarTble,
+                    };
+                    bulk.Columns.AddRange(dt.Columns.Cast<DataColumn>().Select(colum => colum.ColumnName).ToArray());
+                    nIns = (ulong)bulk.Load();
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    if (tran != null)
+                    {
+                        tran.Rollback();
+                    }
+                    sErr = ex.Message;
+                }
+            }
+            File.Delete(tmpPath);
+            return nIns;
+        }
+
+
     }
 }
