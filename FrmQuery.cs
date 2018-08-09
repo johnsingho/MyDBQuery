@@ -72,8 +72,16 @@ namespace MyDBQuery
             var bRet = false;
             try
             {
-                var dt = SqlServerHelper.ExecuteQuery(mConnectType.ConnStr, sSql);
-                mLastQuery = dt;
+                var ds = SqlServerHelper.ExecuteQuery(mConnectType.ConnStr, sSql);
+                if ( !DataTableHelper.IsEmptyDataSet(ds))
+                {
+                    mLastQuery = ds.Tables[0];
+                }
+                else
+                {
+                    mLastQuery = null;
+                }
+                
                 bRet = true;
             }
             catch (Exception ex)
@@ -138,38 +146,84 @@ namespace MyDBQuery
             dgv.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders);
         }
 
+        private string GetSaveFileName()
+        {
+            SaveFileDialog saveFileDlg = new SaveFileDialog();
+
+            saveFileDlg.Filter = "Excel files (*.xlsx)|*.xlsx";
+            saveFileDlg.FilterIndex = 1;
+            saveFileDlg.RestoreDirectory = true;
+
+            if (saveFileDlg.ShowDialog() == DialogResult.OK)
+            {
+                return saveFileDlg.FileName;
+            }
+            return string.Empty;
+        }
         private void btnExport_Click(object sender, EventArgs e)
         {
-            if(null== mLastQuery)
-            {
-                ClearGrid();
-                DoQuery(textSql.Text.Trim());
-            }
+            //if(null== mLastQuery)
+            //{
+            //    ClearGrid();
+            //    DoQuery(textSql.Text.Trim());
+            //}
 
+            var sfn = GetSaveFileName();
+            if (string.IsNullOrEmpty(sfn)) { return; }
             if (null != mLastQuery)
-            {
-                var bys = EPPExcelHelper.BuilderExcel(mLastQuery);
-                if(null!=bys && bys.Length > 0)
+            {                
+                var bys = EPPExcelHelper.BuilderExcel(mLastQuery);                
+                using (var fs=new FileStream(sfn, FileMode.Create))
                 {
-                    SaveFileDialog saveFileDlg = new SaveFileDialog();
+                    fs.Write(bys, 0, bys.Length);
+                }                
+            }
+            else
+            {
+                this.Cursor = Cursors.WaitCursor;
+                BuildExpByDataReader(sfn, textSql.Text.Trim());
+                this.Cursor = Cursors.Default;
+            }
+        }
 
-                    saveFileDlg.Filter = "Excel files (*.xlsx)|*.xlsx";
-                    saveFileDlg.FilterIndex = 1;
-                    saveFileDlg.RestoreDirectory = true;
-
-                    if (saveFileDlg.ShowDialog() == DialogResult.OK)
+        private bool BuildExpByDataReader(string sfn, string sql)
+        {
+            var bRet = false;
+            switch (mConnectType.Type)
+            {
+                case DbType.SQLServer:
                     {
-                        Stream myStream;
-                        if ((myStream = saveFileDlg.OpenFile()) != null)
+                        using (var dr = SqlServerHelper.ExecuteReader(mConnectType.ConnStr, sql, null))
                         {
-                            myStream.Write(bys, 0, bys.Length);
-                            myStream.Close();
-                            MessageBox.Show("导出完成！");
+                            bRet = EPPExcelHelper.BuilderExcel(sfn, dr);
                         }
                     }
-                }
-            }//if
-
+                    break;
+                case DbType.Oracle:
+                    {
+                        using (var conn = new OracleConnection(mConnectType.ConnStr))
+                        {
+                            using (var dr = OraClientHelper.ExecuteReader(conn, CommandType.Text, sql, null))
+                            {
+                                bRet = EPPExcelHelper.BuilderExcel(sfn, dr);
+                            }
+                        }
+                    }
+                    break;
+                case DbType.MySql:
+                    {
+                        using (var conn = new MySqlConnection(mConnectType.ConnStr))
+                        {
+                            using (var dr = MySqlClientHelper.ExecuteReader(conn, CommandType.Text, sql, null))
+                            {
+                                bRet = EPPExcelHelper.BuilderExcel(sfn, dr);
+                            }
+                        }
+                    }
+                    break;
+                default: break;
+            }
+            return bRet;
         }
 
         private void btnConnectType_Click(object sender, EventArgs e)
@@ -215,14 +269,21 @@ namespace MyDBQuery
         }
 
 
+
         #region 导入
+        private bool ImpSQLServerHandler(DataTable dt, ref long nHandles, out string sErr)
+        {
+            var nItems = SqlServerHelper.BulkToDB(mConnectType.ConnStr, dt, dt.TableName, out sErr);
+            nHandles = nHandles + nItems;
+            return string.IsNullOrEmpty(sErr);
+        }
+
         private void ImportSQLServer(string sTarTable, string sXlsFile)
         {
             try
             {
-                var dt = EPPExcelHelper.ReadExcel(new FileInfo(sXlsFile));
                 var sErr = string.Empty;
-                var nItems = SqlServerHelper.BulkToDB(mConnectType.ConnStr, dt, sTarTable, out sErr);
+                var nItems = EPPExcelHelper.ReadExcel(new FileInfo(sXlsFile), sTarTable, ImpSQLServerHandler, out sErr);                
                 if (!string.IsNullOrEmpty(sErr))
                 {
                     MessageBox.Show(sErr);

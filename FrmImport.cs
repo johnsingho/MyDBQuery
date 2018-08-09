@@ -17,7 +17,7 @@ namespace MyDBQuery
         public FrmImport()
         {
             InitializeComponent();
-            txtTar.Text = "TB_tmpIDCard";
+            //txtTar.Text = "TB_tmpIDCard";
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
