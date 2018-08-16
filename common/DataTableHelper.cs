@@ -219,5 +219,16 @@ namespace MyDBQuery.common
 
             return sb.ToString();
         }
+
+        public static List<string> GetDataTableColNames(DataTable dt)
+        {
+            var lst = new List<string>();
+            foreach(DataColumn col in dt.Columns)
+            {
+                lst.Add(col.ColumnName);
+            }
+            return lst;
+        }
+
     }
 }

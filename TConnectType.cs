@@ -12,7 +12,9 @@ namespace MyDBQuery
         [Description("Oracle")]
         Oracle = 1,
         [Description("MySql")]
-        MySql = 2
+        MySql = 2,
+        [Description("Sqlite")]
+        Sqlite = 3
     };
 
     public class TConnectType
