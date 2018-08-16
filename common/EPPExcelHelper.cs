@@ -9,11 +9,11 @@ namespace Common
 {
     /// <summary>
     /// EPPExcelHelper
-    /// use EPPlus
+    /// 使用EPPlus来进行excel导入，导出
     /// By H.Z.XIN
     /// Modified:
     ///     2018-08-09 add DataReader, 分批导入数据库
-    /// 
+    ///     2018-08-15 整理
     /// </summary>
     public class EPPExcelHelper
     {

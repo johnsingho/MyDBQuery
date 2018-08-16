@@ -219,20 +219,23 @@ namespace Common
         /// <returns>SqlDataReader</returns>
         public static SqlDataReader ExecuteReader(string sConn, string sSql, params SqlParameter[] cmdParms)
         {
-            var connection = new SqlConnection(sConn);
-            SqlCommand cmd = new SqlCommand();
-
-            try
+            using (var connection = new SqlConnection(sConn))
             {
-                PrepareCommand(cmd, connection, null, sSql, cmdParms);
-                SqlDataReader myReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
-                cmd.Parameters.Clear();
-                return myReader;
-            }
-            catch (Exception ex)
-            {
-                //LogManager.GetInstance().ErrorLog("GetSingle", ex);
-                throw;
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    try
+                    {
+                        PrepareCommand(cmd, connection, null, sSql, cmdParms);
+                        SqlDataReader myReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                        cmd.Parameters.Clear();
+                        return myReader;
+                    }
+                    catch (Exception ex)
+                    {
+                        //LogManager.GetInstance().ErrorLog("GetSingle", ex);
+                        throw;
+                    }
+                }
             }
         }
 

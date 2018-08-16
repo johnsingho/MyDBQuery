@@ -9,6 +9,13 @@ using System.Text;
 
 namespace MyDBQuery.common
 {
+	/// <summary>
+    /// DateTimeHelper
+    /// By H.Z.XIN
+    /// Modified:
+    ///     2018-08-13 整理
+    /// 
+    /// </summary>
     public static class DataTableHelper
     {
         public static bool IsEmptyDataTable(DataTable dt)
@@ -23,12 +30,76 @@ namespace MyDBQuery.common
             }
             return IsEmptyDataTable(ds.Tables[0]);
         }
+		public static DataTable GetDataTable0(DataSet ds)
+        {
+            var dt = ds.Tables[0];
+            return dt;
+        }
         public static DataRow GetDataSet_Row0(DataSet ds)
         {
             var dt = ds.Tables[0];
             return dt.Rows[0];
         }
 
+		
+        public static Hashtable DataTableToHashtableByKeyValue(DataTable dt, string keyField, string valFiled)
+        {
+            Hashtable ht = new Hashtable();
+            if (dt != null)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    string key = dr[keyField].ToString();
+                    ht[key] = dr[valFiled];
+                }
+            }
+            return ht;
+        }
+        
+        public static IList<Hashtable> DataTableToArrayList(DataTable dt)
+        {
+            IList<Hashtable> result;
+            if (dt == null)
+            {
+                result = new List<Hashtable>();
+            }
+            else
+            {
+                IList<Hashtable> datas = new List<Hashtable>();
+                foreach (DataRow dr in dt.Rows)
+                {
+                    Hashtable ht = DataTableHelper.DataRowToHashTable(dr);
+                    datas.Add(ht);
+                }
+                result = datas;
+            }
+            return result;
+        }
+
+        public static Hashtable DataTableToHashtable(DataTable dt)
+        {
+            Hashtable ht = new Hashtable();
+            foreach (DataRow dr in dt.Rows)
+            {
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    string key = dt.Columns[i].ColumnName;
+                    ht[key.ToUpper()] = dr[key];
+                }
+            }
+            return ht;
+        }
+
+        public static Hashtable DataRowToHashTable(DataRow dr)
+        {
+            Hashtable htReturn = new Hashtable(dr.ItemArray.Length);
+            foreach (DataColumn dc in dr.Table.Columns)
+            {
+                htReturn.Add(dc.ColumnName, dr[dc.ColumnName]);
+            }
+            return htReturn;
+        }
+		
         public static DataTable ToDataTable<T>(this IList<T> data)
         {
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
@@ -71,7 +142,7 @@ namespace MyDBQuery.common
                             }
                         }
                     }
-                    IL_B2:
+                IL_B2:
                     i++;
                     continue;
                     goto IL_B2;
@@ -79,8 +150,47 @@ namespace MyDBQuery.common
                 list.Add(obj);
             }
             return list;
+        }        
+		
+		public static DataTable GetPagedTable(DataTable dt, int PageIndex, int PageSize)
+        {
+            DataTable result;
+            if (PageIndex == 0)
+            {
+                result = dt;
+            }
+            else
+            {
+                DataTable newdt = dt.Copy();
+                newdt.Clear();
+                int rowbegin = (PageIndex - 1) * PageSize;
+                int rowend = PageIndex * PageSize;
+                if (rowbegin >= dt.Rows.Count)
+                {
+                    result = newdt;
+                }
+                else
+                {
+                    if (rowend > dt.Rows.Count)
+                    {
+                        rowend = dt.Rows.Count;
+                    }
+                    for (int i = rowbegin; i <= rowend - 1; i++)
+                    {
+                        DataRow newdr = newdt.NewRow();
+                        DataRow dr = dt.Rows[i];
+                        foreach (DataColumn column in dt.Columns)
+                        {
+                            newdr[column.ColumnName] = dr[column.ColumnName];
+                        }
+                        newdt.Rows.Add(newdr);
+                    }
+                    result = newdt;
+                }
+            }
+            return result;
         }
-
+		
         /// <summary>
         ///将DataTable转换为标准的CSV
         /// </summary>

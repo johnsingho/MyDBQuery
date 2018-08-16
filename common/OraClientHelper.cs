@@ -5,16 +5,16 @@ using System.Data;
 
 namespace Common
 {
+	/// <summary>
+    /// OraClientHelper 
+    /// Oracle 简单访问类
+    /// By H.Z.XIN
+    /// Modified:
+    ///     2018-08-16 整理
+    /// 
+    /// </summary>
     public sealed class OraClientHelper
-    {        
-
-        //// Read the connection strings from the configuration file
-        //public static readonly string ConnectionStringLocalTransaction = ConfigurationManager.ConnectionStrings["OraConnString1"].ConnectionString;
-        //public static readonly string ConnectionStringInventoryDistributedTransaction = ConfigurationManager.ConnectionStrings["OraConnString2"].ConnectionString;
-        //public static readonly string ConnectionStringOrderDistributedTransaction = ConfigurationManager.ConnectionStrings["OraConnString3"].ConnectionString;
-        //public static readonly string ConnectionStringProfile = ConfigurationManager.ConnectionStrings["OraProfileConnString"].ConnectionString;
-        //public static readonly string ConnectionStringMembership = ConfigurationManager.ConnectionStrings["OraMembershipConnString"].ConnectionString;
-
+    {
         //Create a hashtable for the parameter cached
         private static Hashtable parmCache = Hashtable.Synchronized(new Hashtable());
 
@@ -82,7 +82,6 @@ namespace Common
         /// <returns>an int representing the number of rows affected by the command</returns>
         public static int ExecuteNonQuery(OracleConnection connection, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
-
             OracleCommand cmd = new OracleCommand();
 
             PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
@@ -101,7 +100,6 @@ namespace Common
         /// <returns></returns>
         public static OracleDataReader ExecuteReader(string connectionString, CommandType cmdType, string cmdText, params OracleParameter[] commandParameters)
         {
-
             //Create the command and connection
             OracleCommand cmd = new OracleCommand();
             OracleConnection conn = new OracleConnection(connectionString);
@@ -268,7 +266,6 @@ namespace Common
         /// <param name="commandParameters">Parameters for the command</param>
         private static void PrepareCommand(OracleCommand cmd, OracleConnection conn, OracleTransaction trans, CommandType cmdType, string cmdText, OracleParameter[] commandParameters)
         {
-
             //Open the connection if required
             if (conn.State != ConnectionState.Open)
                 conn.Open();

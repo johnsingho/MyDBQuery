@@ -5,9 +5,17 @@ using System.Data;
 using System.IO;
 
 namespace MyDBQuery.common
-{
-    //MySql connect helper
-    //H.Z.XIN 2017-09-07
+{	
+	/// <summary>
+    /// MySqlClientHelper 
+    /// MySql 简单访问类
+    /// By H.Z.XIN
+    /// Modified:
+    ///     2018-03-06 添加存储过程执行功能
+    ///     2018-08-01 change BulkToDB
+    ///     2018-08-02 重写
+    /// 
+    /// </summary>
     public class MySqlClientHelper
     {
         public static int ExecuteNonQuery(string connectionString, CommandType cmdType, string cmdText, params MySqlParameter[] commandParameters)
@@ -63,7 +71,6 @@ namespace MyDBQuery.common
             }
             catch (Exception ex)
             {
-
                 //If an error occurs close the connection as the reader will not be used and we expect it to close the connection
                 conn.Close();
                 throw;
