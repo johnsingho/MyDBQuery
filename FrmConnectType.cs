@@ -14,7 +14,6 @@ namespace MyDBQuery
     public partial class FrmConnectType : Form
     {
         public TConnectType ConnectType = new TConnectType();
-        private static readonly string IniFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Setting.ini");
         //private BindingSource bsLog = new BindingSource();
 
         public FrmConnectType()
@@ -58,7 +57,7 @@ namespace MyDBQuery
 
             if (!bExist)
             {
-                var oIni = new IniParser(IniFile);
+                var oIni = new IniParser(AppCommon.IniFile);
                 var sMd5 = Md5Helper.CalcMd5(sConn);
                 oIni.AddSetting(sDbType, sMd5, sConn);
                 oIni.SaveSettings();
@@ -70,7 +69,7 @@ namespace MyDBQuery
 
         private List<KeyValuePair> LoadLogs(string sDbType)
         {
-            var oIni = new IniParser(IniFile);
+            var oIni = new IniParser(AppCommon.IniFile);
             return oIni.EnumSectionAndValues(sDbType);
         }
         private void OnSelectedIndexChanged(object sender, EventArgs e)

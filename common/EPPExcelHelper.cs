@@ -14,6 +14,7 @@ namespace Common
     /// Modified:
     ///     2018-08-09 add DataReader, 分批导入数据库
     ///     2018-08-15 整理
+    ///     2018-10-05 add some datetime format
     /// </summary>
     public class EPPExcelHelper
     {
@@ -187,10 +188,15 @@ namespace Common
                             "m/d/yyyy H:mm",
                             "m/d/yyyy H:mm:ss",
                             "yyyy\\-mm\\-dd",
+                            "yyyy\\-mm\\-dd;@",
                             "yyyy\\-mm\\-dd hh:mm",
+                            "yyyy\\-mm\\-dd hh:mm;@",
                             "yyyy\\-mm\\-dd hh:mm:ss",
+                            "yyyy\\-mm\\-dd hh:mm:ss;@",
                             "yyyy\\-MM\\-dd HH:mm",
                             "yyyy\\-MM\\-dd HH:mm:ss",
+                            "yyyy\\-MM\\-dd HH:mm;@",
+                            "yyyy\\-MM\\-dd HH:mm:ss;@",
                             "MM/dd/yyyy hh:mm:ss AM/PM"
             };
         private static bool IsDatetimeFmt(int fmtID, string strFmt)

@@ -1,10 +1,6 @@
-﻿using System;
+﻿using MyDBQuery.common;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MyDBQuery
@@ -13,11 +9,28 @@ namespace MyDBQuery
     {
         public string mTarTable { get; set; }
         public string mXlsFile { get; set; }
+        private List<KeyValuePair> mLstImpHIs {get;set;}
 
         public FrmImport()
         {
             InitializeComponent();
-            //txtTar.Text = "TB_tmpIDCard";
+            InitTarTableAutoComplete();
+            //cmbTarTab.Text = "TB_tmpIDCard";
+        }
+
+        private void InitTarTableAutoComplete()
+        {
+            cmbTarTab.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbTarTab.AutoCompleteSource = AutoCompleteSource.CustomSource;
+
+            var namesCollection = new AutoCompleteStringCollection();
+            var oIni = new IniParser(AppCommon.IniFile);
+            mLstImpHIs = oIni.EnumSectionAndValues(AppCommon.SEC_IMPTABHIS);
+            mLstImpHIs.ForEach(p =>
+            {
+                namesCollection.Add(p.Val);
+            });
+            cmbTarTab.AutoCompleteCustomSource = namesCollection;
         }
 
         public void SetCheckLastQuery(bool bcheck)
@@ -41,16 +54,35 @@ namespace MyDBQuery
         {
             if (!chkUseLastQuery.Checked)
             {
-                mTarTable = txtTar.Text.Trim();
+                mTarTable = cmbTarTab.Text.Trim();
                 mXlsFile = txtXlsFile.Text.Trim();
                 if (string.IsNullOrEmpty(mTarTable) || string.IsNullOrEmpty(mXlsFile))
                 {
                     MessageBox.Show("请提供目标表和excel表格");
                     return;
                 }
-            }            
+            }
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void FrmImport_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            var sLast = cmbTarTab.Text.Trim();
+            if (string.IsNullOrEmpty(sLast))
+            {
+                return;
+            }
+            if(null == mLstImpHIs.Find(x =>
+            {
+                return 0==string.Compare(x.Val, sLast, true);
+            }))
+            {
+                var oIni = new IniParser(AppCommon.IniFile);
+                var ds = DateTime.Now.ToString("MMddHHmmss");
+                oIni.AddSetting(AppCommon.SEC_IMPTABHIS, ds, sLast);
+                oIni.SaveSettings();
+            }
         }
     }
 }

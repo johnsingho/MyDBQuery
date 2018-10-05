@@ -29,16 +29,16 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtTar = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtXlsFile = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.btnDoImport = new System.Windows.Forms.Button();
-            this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
+            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.chkUseLastQuery = new System.Windows.Forms.CheckBox();
+            this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
+            this.cmbTarTab = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -49,12 +49,12 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 36.10315F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 63.89685F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtTar, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.btnDoImport, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.chkUseLastQuery, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.cmbTarTab, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -67,17 +67,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(398, 201);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // label2
-            // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 61);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(119, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "数据源(excel文件）：";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // label1
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -88,14 +77,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "目标表：";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtTar
-            // 
-            this.txtTar.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtTar.Location = new System.Drawing.Point(146, 3);
-            this.txtTar.Name = "txtTar";
-            this.txtTar.Size = new System.Drawing.Size(217, 20);
-            this.txtTar.TabIndex = 1;
             // 
             // tableLayoutPanel2
             // 
@@ -141,6 +122,17 @@
             this.btnDoImport.UseVisualStyleBackColor = true;
             this.btnDoImport.Click += new System.EventHandler(this.btnDoImport_Click);
             // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 61);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(119, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "数据源(excel文件）：";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // label3
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -161,6 +153,15 @@
             this.chkUseLastQuery.TabIndex = 6;
             this.chkUseLastQuery.UseVisualStyleBackColor = true;
             // 
+            // cmbTarTab
+            // 
+            this.cmbTarTab.FormattingEnabled = true;
+            this.cmbTarTab.Location = new System.Drawing.Point(146, 3);
+            this.cmbTarTab.MaxDropDownItems = 10;
+            this.cmbTarTab.Name = "cmbTarTab";
+            this.cmbTarTab.Size = new System.Drawing.Size(215, 21);
+            this.cmbTarTab.TabIndex = 7;
+            // 
             // FrmImport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -171,6 +172,7 @@
             this.Name = "FrmImport";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "从Excel导入";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmImport_FormClosed);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -184,7 +186,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtTar;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TextBox txtXlsFile;
         private System.Windows.Forms.Button btnBrowse;
@@ -192,5 +193,6 @@
         private System.Windows.Forms.OpenFileDialog dlgOpen;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox chkUseLastQuery;
+        private System.Windows.Forms.ComboBox cmbTarTab;
     }
 }
